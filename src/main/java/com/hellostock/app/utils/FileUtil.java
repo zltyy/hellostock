@@ -25,8 +25,8 @@ public class FileUtil {
 				String low = c.get("最低价");
 				String close = c.get("收盘价");
 				String volume = c.get("成交量");
-				Map<String, Object> map = new HashMap<String, Object>();
 				
+				Map<String, Object> map = new HashMap<String, Object>();
 				map.put("date", DateUtil.format2Int(DateUtil.format(date, DateUtil.STR_DATE_PATTERN2)));
 				map.put("open", StringUtil.format2Double(open));
 				map.put("high", StringUtil.format2Double(high));
