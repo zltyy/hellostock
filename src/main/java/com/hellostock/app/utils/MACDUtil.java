@@ -3,9 +3,6 @@ package com.hellostock.app.utils;
 import java.util.List;
 import java.util.Map;
 
-import com.hellostock.app.domain.MACD;
-
-
 public class MACDUtil {
 	
 	public static double getEMA(double preEma,double closePrice,double x){
