@@ -43,9 +43,9 @@ public class MACDUtil {
 //		m1.setBar(0.0);
 		map_1.put("sema", close1);
 		map_1.put("lema", close1);
-		map_1.put("dif", 0);
-		map_1.put("dea", 0);
-		map_1.put("bar", 0);
+		map_1.put("dif", 0.0);
+		map_1.put("dea", 0.0);
+		map_1.put("bar", 0.0);
 		
 		for (int i = 1;i < list.size();i++) {
 			

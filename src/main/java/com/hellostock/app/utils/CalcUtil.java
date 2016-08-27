@@ -7,6 +7,13 @@ import java.util.List;
 import java.util.Map;
 
 public class CalcUtil {
+	
+	private static double STAMPTAX = 0.001;
+	private static double COMMISSION = 0.0003;
+	
+	public static double TOTAL = 10000.0;
+	public static double COST = 0.;
+	public static double PROFIT = 0.;
 
 	/**
 	 * 
@@ -15,25 +22,46 @@ public class CalcUtil {
 	 * @return
 	 */
 	public static void calc(List<Map<String, Object>> list, int k){
+		boolean b = true;
+		double bar = 0;
 		List<Map<String, Object>> tradeList = new ArrayList<Map<String, Object>>();
-		for (int i = k; i < list.size() - 1; i++) {
+		for (int i = 1; i < list.size() - 1; i++) {
 			Map<String, Object> pre_map = list.get(i - 1);
 			Map<String, Object> cur_map = list.get(i);
 			double pre_bar = (Double) pre_map.get("bar");
 			double cur_bar = (Double) cur_map.get("bar");
 			
-			if(cur_bar > 0){
+			if (calcBad(pre_bar, cur_bar) && !b) {
+				if(k < 15){
+					continue;
+				}
+				b = true;
+//				System.out.println("bad cross:" + pre_bar);
+				calcSell(cur_map);
+				COST = 0;
+				PROFIT = 0;
+			}
+			
+			if(Math.abs(pre_bar) > Math.abs(cur_bar)*4 && !b){
+				if(calcSell(cur_map)){
+					b = true;
+					COST = 0;
+					PROFIT = 0;
+				}
 				
 			}
-			if (calcBad(pre_bar, cur_bar)) {
-				System.out.println("bad cross:" + i);
-				tradeList.add(pre_map);
-//				return k;
+			
+			if(calcGolden(pre_bar, cur_bar) && b){
+//				System.out.println("golden cross:" + i);
+				calcBuy(cur_map);
+				k = 1;
+				bar = cur_bar;
+				b = false;
 			}
-			if(calcGolden(pre_bar, cur_bar)){
-				System.out.println("golden cross:" + i);
-				tradeList.add(pre_map);
+			if(pre_bar > 0){
+				k ++;
 			}
+			
 		}
 		
 	}
@@ -43,23 +71,21 @@ public class CalcUtil {
 	 * @param cycleList
 	 * @param map
 	 */
-	public static void calcBuy(List<Map<String, Object>> cycleList, Map<String, Object> map) {
-		sortPrice(cycleList);
-		Map<String, Object> minMap = cycleList.get(0);
-		Map<String, Object> maxMap = cycleList.get(cycleList.size() - 1);
-		double minPrice = (Double) minMap.get("closePrice");
-		double maxPrice = (Double) maxMap.get("closePrice");
-		double radio = 0.0;
-		double COST = minPrice * (STAMPTAX + COMMISSION + 1);
-		radio = maxPrice * (1 - COMMISSION) - COST;
-		if (radio <= 0) {
-			radio = 0.0;
-		} 
-		map.put("radio", radio);
+	public static void calcBuy(Map<String, Object> map) {
+		double close = (Double) map.get("close");
+		COST =  close;
+		map.put("b/s", "b");
 	}
 	
-	public static void calcSell(){
-		
+	public static boolean calcSell(Map<String, Object> map){
+		PROFIT = ((Double) map.get("close") / COST) - COMMISSION - (1 + STAMPTAX + COMMISSION);
+		if(PROFIT > 0){
+			map.put("b/s", "s");
+			map.put("fit", PROFIT);
+			return true;
+		}else{
+			return false;
+		}
 	}
 	
 	/**
@@ -82,11 +108,11 @@ public class CalcUtil {
 	public static void calcAvg(List<Map<String, Object>> list,int x){
 		for (int i = x - 1;i < list.size();i++) {
 			Map<String, Object> map = list.get(i);
-			double closePrice = 0;
+			double close = 0;
 			for (int j = i;j > i - x;j--) {
-				closePrice += (Double)list.get(j).get("closePrice");
+				close += (Double)list.get(j).get("close");
 			}
-			map.put(new String().valueOf(x), closePrice / x);
+			map.put(new String().valueOf(x), close / x);
 		}
 	}
 	

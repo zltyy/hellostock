@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,12 +20,12 @@ public class FileUtil {
 			c.readHeaders();
 			while (c.readRecord()) {
 				c.getRawRecord();
-				String date = c.get("日期");
-				String open = c.get("开盘价");
-				String high = c.get("最高价");
-				String low = c.get("最低价");
-				String close = c.get("收盘价");
-				String volume = c.get("成交量");
+				String date = c.get(0);
+				String open = c.get(1);
+				String high = c.get(2);
+				String low = c.get(3);
+				String close = c.get(4);
+				String volume = c.get(5);
 				
 				Map<String, Object> map = new HashMap<String, Object>();
 				map.put("date", DateUtil.format2Int(DateUtil.format(date, DateUtil.STR_DATE_PATTERN2)));
@@ -33,6 +34,8 @@ public class FileUtil {
 				map.put("low", StringUtil.format2Double(low));
 				map.put("close", StringUtil.format2Double(close));
 				map.put("volume", StringUtil.format2Long(volume));
+				map.put("b/s", "");
+				map.put("profit", 0.0);
 				list.add(map);
 			}
 			c.close();
@@ -52,34 +55,42 @@ public class FileUtil {
 			CsvWriter csvOutput = new CsvWriter(new FileWriter(outputFilePath, true), ',');
 			// if the file didn't already exist then we need to write out the
 			// header line
-			if (!alreadyExists) {
-				for (String key : list.get(0).keySet()) {
-					csvOutput.write(key);
-				}
-				csvOutput.endRecord();
+			if (alreadyExists) {
+				new File(outputFilePath).delete();
 			}
+			csvOutput.write("date");
+			csvOutput.write("open");
+			csvOutput.write("high");
+			csvOutput.write("low");
+			csvOutput.write("close");
+			csvOutput.write("volume");
+			csvOutput.write("sema");
+			csvOutput.write("lema");
+			csvOutput.write("dif");
+			csvOutput.write("dea");
+			csvOutput.write("bar");
+			csvOutput.write("fit");
+			csvOutput.write("b/s");
+//				csvOutput.write("");
+			csvOutput.endRecord();
 			// else assume that the file already has the correct header line
 			// write out a few records
 			for (Map<String, Object> map : list) {
-				csvOutput.writeRecord((String[]) map.values().toArray());
-				/*csvOutput.write(DateUtil.format2String((Date) map.get("hqDateTime"), DateUtil.STR_DATE_PATTERN2));
-				csvOutput.write(map.get("openPrice").toString());
-				csvOutput.write(map.get("highestPrice").toString());
-				csvOutput.write(map.get("lowestPrice").toString());
-				csvOutput.write(map.get("closePrice").toString());
-				csvOutput.write(map.get("totalAmount").toString());
-				MACD macd = (MACD) map.get("macd");
-				csvOutput.write(Double.toString(macd.getShortEma()));
-				csvOutput.write(Double.toString(macd.getLongEma()));
-				csvOutput.write(Double.toString(macd.getDif()));
-				csvOutput.write(Double.toString(macd.getDea()));
-				csvOutput.write(Double.toString(macd.getBar()));
-				csvOutput.write(Double.toString((Double) map.get("radio") == null ? 0.0 : (Double) map.get("radio")));
-				double d1 = (Double)map.get(new String().valueOf(m))==null?0:(Double)map.get(new String().valueOf(m));
-				double d2 = (Double)map.get(new String().valueOf(n))==null?0:(Double)map.get(new String().valueOf(n));
-				csvOutput.write(Double.toString(d1 - d2));
-				csvOutput.write(Double.toString(d1));
-				csvOutput.write(Double.toString(d2));*/
+//				csvOutput.writeRecord((String[]) map.values().toArray());
+				csvOutput.write(Integer.toString((Integer) map.get("date")));
+				csvOutput.write(map.get("open").toString());
+				csvOutput.write(map.get("high").toString());
+				csvOutput.write(map.get("low").toString());
+				csvOutput.write(map.get("close").toString());
+				csvOutput.write(map.get("volume").toString());
+				csvOutput.write(map.get("sema").toString());
+				csvOutput.write(map.get("lema").toString());
+				csvOutput.write(map.get("dif").toString());
+				csvOutput.write(map.get("dea").toString());
+				csvOutput.write(map.get("bar").toString());
+				csvOutput.write(map.get("fit") == null ? "0":map.get("fit").toString());
+				csvOutput.write(map.get("b/s").toString());
+				
 				csvOutput.endRecord();
 			}
 			csvOutput.close();

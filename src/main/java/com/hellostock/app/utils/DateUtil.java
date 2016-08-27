@@ -12,7 +12,7 @@ public class DateUtil {
 	public static final String STR_DATE_PATTERN2 = "yyyy/MM/dd";
 	
 	
-	@SuppressWarnings("finally")
+//	@SuppressWarnings("finally")
 	public static Date format(String date, String pattern){
 		SimpleDateFormat sdf = new SimpleDateFormat(pattern);
 		Date d = null;

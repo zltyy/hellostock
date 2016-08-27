@@ -19,12 +19,10 @@ import com.hellostock.app.utils.MACDUtil;
  */
 public class App 
 {
-	private static double STAMPTAX = 0.001;
-	private static double COMMISSION = 0.0003;
 	public static int min = 5;
 	public static int max = 20;
 
-	private static String base_path = "resources\\data\\";
+	private static String base_path = "E:\\work\\workspaces6\\hellostock\\src\\main\\resources\\data\\";
 
 	public static void main(String[] args) {
 		File file = new File(base_path);
@@ -39,37 +37,15 @@ public class App
 					CalcUtil.calcAvg(stock_list, min);
 					CalcUtil.calcAvg(stock_list, max);
 					CalcUtil.calc(stock_list, 1);
-					FileUtil.writeDate2Csv(stock_list, f.getAbsolutePath().replace(".csv", "_MACD.csv"));
+					double fit = 0;
+					for (Map<String, Object> map : stock_list) {
+						fit += (Double)map.get("fit")==null ? 0: (Double)map.get("fit");
+					}
+					System.out.println(f.getName().split(".csv")[0]+":"+fit * 100);
+					FileUtil.writeDate2Csv(stock_list, "d:\\lhcl\\"+f.getName().replace(".csv", "_MACD.csv"));
 				}
 			}
 		}
-	}
-
-	/**
-	 * 
-	 * @param list
-	 */
-	public static void sort(List<Map<String, Object>> list) {
-		Collections.sort(list, new Comparator<Map<String, Object>>() {
-
-			public int compare(Map<String, Object> o1, Map<String, Object> o2) {
-				double p1 = (Double) o1.get("closePrice");
-				double p2 = (Double) o2.get("closePrice");
-				if (p1 > p2) {
-					return 1;
-				} else if (p1 == p2) {
-					int hqDate1 = DateUtil.format2Int((Date) o1.get("hqDateTime"));
-					int hqDate2 = DateUtil.format2Int((Date) o2.get("hqDateTime"));
-					if (hqDate1 > hqDate2) {
-						return 1;
-					} else {
-						return -1;
-					}
-				} else {
-					return -1;
-				}
-			}
-		});
 	}
 
 }
