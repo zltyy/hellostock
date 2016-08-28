@@ -1,5 +1,6 @@
 package com.hellostock.app.utils;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -68,6 +69,49 @@ public class MACDUtil {
 			map.put("bar", getBAR(dif, dea));
 			
 		}
+	}
+	
+	/**
+	 * 
+	 * @param list
+	 * @return
+	 */
+	public static Map<String, Integer> statCycleDays(List<Map<String, Object>> list){
+		int up = 0;
+		int down = 0;
+		int m = 1;
+		int n = 1;
+		Map<String, Integer> map = new HashMap<String, Integer>();
+		for (int i = 0; i < list.size() - 1; i++) {
+			Map<String, Object> m1 = list.get(i);
+			Map<String, Object> m2 = list.get(i + 1);
+			double b1 = (Double) m1.get("bar");
+			double b2 = (Double) m2.get("bar");
+			
+			if(b1 > 0){
+				up++;
+			}
+			
+			if(b1 < 0){
+				down++;
+			}
+			
+			if(b1 == 0){
+				
+			}
+			
+			if(CalcUtil.calcBad(b1, b2)){
+				map.put("up_"+m, up);
+				up = 0;
+				m++;
+			}
+			if(CalcUtil.calcGolden(b1, b2)){
+				map.put("down_"+n, down);
+				down = 0;
+				n++;
+			}
+		}
+		return map;
 	}
 
 }

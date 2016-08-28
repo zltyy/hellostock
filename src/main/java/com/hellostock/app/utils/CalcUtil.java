@@ -32,7 +32,7 @@ public class CalcUtil {
 			double cur_bar = (Double) cur_map.get("bar");
 			
 			if (calcBad(pre_bar, cur_bar) && !b) {
-				if(k < 15){
+				if(k < 10){
 					continue;
 				}
 				b = true;
